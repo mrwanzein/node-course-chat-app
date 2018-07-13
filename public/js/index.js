@@ -1,5 +1,22 @@
 let socket = io();
 
+function scrollToBottom() {
+    // Selectors
+    let messages = jQuery('#messages');
+    let newMessage = messages.children('li:last-child');
+
+    //Heights
+    let clientHeight = messages.prop('clientHeight');
+    let scrollTop = messages.prop('scrollTop');
+    let scrollHeight = messages.prop('scrollHeight');
+    let newMessageHeight = newMessage.innerHeight();
+    let lastMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+};
+
 socket.on('connect', function() {
     console.log('Connection made to server');
 });
@@ -20,6 +37,7 @@ socket.on('newMessage', function(message) {
 
     jQuery('#messages').append(html); // render in view
 
+    scrollToBottom()
     /*  
         Switching to mustache.js for more convienient html templating
    
@@ -40,6 +58,8 @@ socket.on('newLocationMessage', function(message) {
     });
     
     jQuery('#messages').append(html);
+    
+    scrollToBottom()
     /* let li = jQuery('<li></li><br>');
     let a = jQuery('<a target="_blank">My current location</a>');
 
