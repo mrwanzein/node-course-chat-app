@@ -9,23 +9,43 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message) {
+    let formattedTime = moment(message.createdAt).format('h:mm a');  
+    let template = jQuery('#message-template').html(); // grab the html via jQuery
+    let html = Mustache.render(template, { 
+     // render it through mustache, second argument for dynamic injection   
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    }); 
+
+    jQuery('#messages').append(html); // render in view
+
+    /*  
+        Switching to mustache.js for more convienient html templating
+   
     let formattedTime = moment(message.createdAt).format('h:mm a');
     let li = jQuery('<li></li><br>');
     li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
-    jQuery('#messages').append(li);
+    jQuery('#messages').append(li); */
 });
 
 socket.on('newLocationMessage', function(message) {
     let formattedTime = moment(message.createdAt).format('h:mm a');
-    let li = jQuery('<li></li><br>');
+    let template = jQuery('#location-message-template').html();
+    let html = Mustache.render(template, {
+        from: message.from,
+        url: message.url,
+        createdAt: formattedTime
+    });
+    
+    jQuery('#messages').append(html);
+    /* let li = jQuery('<li></li><br>');
     let a = jQuery('<a target="_blank">My current location</a>');
 
     li.text(`${message.from} ${formattedTime}: `);
     a.attr('href', message.url); // first arg: attr, second arg: value
-    li.append(a)
-
-    jQuery('#messages').append(li);
+    li.append(a) */
 });
 
 jQuery('#message-form').on('submit', function(e) { // 'sumbit' for forms
