@@ -1,4 +1,5 @@
 let socket = io();
+const params = jQuery.deparam(window.location.search);
 
 function scrollToBottom() { // auto scroller
     // Selectors
@@ -18,7 +19,6 @@ function scrollToBottom() { // auto scroller
 };
 
 socket.on('connect', function() {
-    let params = jQuery.deparam(window.location.search);
 
     socket.emit('join', params, function(err) {
         if (err) {
@@ -93,7 +93,7 @@ jQuery('#message-form').on('submit', function(e) { // 'sumbit' for forms
     let messageTextbox = jQuery('[name=message]');
 
     socket.emit('createMessage', {
-        from: 'User',
+        from: params.name,
         text: messageTextbox.val()
     }, function() {
         messageTextbox.val('');
@@ -111,6 +111,7 @@ locationButton.on('click', function() { // 'click' for other buttons
     navigator.geolocation.getCurrentPosition(function(position) {
         locationButton.removeAttr('disabled').text('Send location'); // 1 arg
         socket.emit('createLocationMessage', {
+            name: params.name,
             lat: position.coords.latitude,
             lng: position.coords.longitude
         });

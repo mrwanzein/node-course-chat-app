@@ -37,14 +37,16 @@ io.on('connection', (socket) => {
     });
 
     socket.on('createMessage', (message, callback) => {
+        let user = users.getUser(socket.id);
         
-        io.emit('newMessage', generateMessage(message.from, message.text)); // to emit to all listeners
+        io.to(user.room).emit('newMessage', generateMessage(message.from, message.text)); // to emit to all listeners
 
         callback();
     });
 
     socket.on('createLocationMessage', (coords) => {
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.lat, coords.lng));
+        let user = users.getUser(socket.id);
+        io.to(user.room).emit('newLocationMessage', generateLocationMessage(coords.name, coords.lat, coords.lng));
     });
 
     socket.on('disconnect', () => {
